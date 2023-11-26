@@ -58,8 +58,6 @@ spec:
           value: ""
         - name: S3_PREFIX
           value: ""
-        - name: SCHEDULE
-          value: ""
 ```
 
 ## Environment variables
@@ -79,15 +77,8 @@ spec:
 | S3_REGION            | us-west-1 |          | The AWS S3 bucket region                                                                                                 |
 | S3_ENDPOINT          |           |          | The AWS Endpoint URL, for S3 Compliant APIs such as [minio](https://minio.io)                                            |
 | S3_S3V4              | no        |          | Set to `yes` to enable AWS Signature Version 4, required for [minio](https://minio.io) servers                           |
-| SCHEDULE             |           |          | Backup schedule time, see explainatons below                                                                             |
 | ENCRYPTION_PASSWORD  |           |          | Password to encrypt the backup. Can be decrypted using `openssl aes-256-cbc -d -in backup.sql.gz.enc -out backup.sql.gz` |
 | DELETE_OLDER_THAN    |           |          | Delete old backups, see explanation and warning below                                                                    |
-
-### Automatic Periodic Backups
-
-You can additionally set the `SCHEDULE` environment variable like `-e SCHEDULE="@daily"` to run the backup automatically.
-
-More information about the scheduling can be found [here](http://godoc.org/github.com/robfig/cron#hdr-Predefined_schedules).
 
 ### Delete Old Backups
 

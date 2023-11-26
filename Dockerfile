@@ -1,32 +1,27 @@
-FROM alpine:3.18
-LABEL maintainer="ITBM"
+FROM public.ecr.aws/docker/library/alpine:3.18
 
-RUN apk update \
-	&& apk upgrade \
-	&& apk add coreutils postgresql15-client aws-cli openssl curl \
-	&& curl -L --insecure https://github.com/odise/go-cron/releases/download/v0.0.7/go-cron-linux.gz | zcat > /usr/local/bin/go-cron \
- 	&& chmod u+x /usr/local/bin/go-cron \
-	&& apk del curl \
-	&& rm -rf /var/cache/apk/*
+ENV POSTGRES_DATABASE="**None**" \
+    POSTGRES_HOST="**None**" \
+    POSTGRES_PORT="5432" \
+    POSTGRES_USER="**None**" \
+    POSTGRES_PASSWORD="**None**" \
+    POSTGRES_EXTRA_OPTS="" \
+    S3_ACCESS_KEY_ID="**None**" \
+    S3_SECRET_ACCESS_KEY="**None**" \
+    S3_BUCKET="**None**" \
+    S3_PREFIX="backup" \
+    S3_ENDPOINT="**None**" \
+    S3_REGION="us-east-1" \
+    S3_S3V4="yes" \
+    ENCRYPTION_PASSWORD="**None**" \
+    DELETE_OLDER_THAN="**None**"
 
-ENV POSTGRES_DATABASE **None**
-ENV POSTGRES_HOST **None**
-ENV POSTGRES_PORT 5432
-ENV POSTGRES_USER **None**
-ENV POSTGRES_PASSWORD **None**
-ENV POSTGRES_EXTRA_OPTS ''
-ENV S3_ACCESS_KEY_ID **None**
-ENV S3_SECRET_ACCESS_KEY **None**
-ENV S3_BUCKET **None**
-ENV S3_REGION us-west-1
-ENV S3_PREFIX 'backup'
-ENV S3_ENDPOINT **None**
-ENV S3_S3V4 no
-ENV SCHEDULE **None**
-ENV ENCRYPTION_PASSWORD **None**
-ENV DELETE_OLDER_THAN **None**
+# hadolint ignore=DL3018,DL3059
+RUN apk add --no-cache catatonit coreutils aws-cli openssl
+# hadolint ignore=DL3018,DL3059
+RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main postgresql16-client
 
-ADD run.sh run.sh
-ADD backup.sh backup.sh
+COPY scripts/*.sh /usr/local/bin/
+COPY entrypoint.sh /entrypoint.sh
 
-CMD ["sh", "run.sh"]
+ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]

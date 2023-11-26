@@ -70,10 +70,9 @@ else
   pg_dump $POSTGRES_HOST_OPTS $POSTGRES_DATABASE | gzip > $SRC_FILE
 fi
 
-
 if [ "${ENCRYPTION_PASSWORD}" != "**None**" ]; then
   >&2 echo "Encrypting ${SRC_FILE}"
-  openssl enc -aes-256-cbc -in $SRC_FILE -out ${SRC_FILE}.enc -k $ENCRYPTION_PASSWORD
+  openssl enc -aes-256-cbc -in $SRC_FILE -out ${SRC_FILE}.enc -pbkdf2 -k $ENCRYPTION_PASSWORD
   if [ $? != 0 ]; then
     >&2 echo "Error encrypting ${SRC_FILE}"
   fi
